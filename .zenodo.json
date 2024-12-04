@@ -1,0 +1,29 @@
+{
+    "license": "MIT",
+    "title": "Reproducibility repository for Traveling-wave solutions and structure-preserving numerical methods for a hyperbolic approximation of the Korteweg-de Vries equation",
+    "upload_type": "software",
+    "creators": [
+        {
+	    "affiliation": "King Abdullah University of Science and Technology",
+            "name": "Abhijit Biswas",
+            "orcid": "TODO"
+        },
+        {
+	    "affiliation": "King Abdullah University of Science and Technology",
+            "name": "David I. Ketcheson",
+            "orcid": "0000-0002-1212-126X"
+        },
+        {
+            "affiliation": "Institute of Mathematics, Johannes Gutenberg University Mainz, Germany",
+            "name": "Ranocha, Hendrik",
+            "orcid": "0000-0002-3456-2277"
+        },
+        {
+            "affiliation": "Faculty of Sciences and Data Science Institute, Hasselt University, Belgium",
+            "name": "Schütz, Jochen",
+            "orcid": "0000-0002-6355-9130"
+        }
+    ],
+    "access_right": "open"
+}
+
