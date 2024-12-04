@@ -49,7 +49,12 @@ these discretizations.
 
 ## Numerical experiments
 
-TODO: Describe required setup
+The numerical experiments use [Python](https://www.python.org)
+and [Julia](https://julialang.org).
+
+TODO (David): Describe required Python setup
+
+TODO (Hendrik): Describe required Julia setup
 
 
 ## Disclaimer
