@@ -1,7 +1,16 @@
 # Install packages
 import Pkg
-Pkg.activate(@__DIR__)
-Pkg.instantiate()
+if v"1.10" <= VERSION < v"1.12-"
+    # We provide Manifest files for perfect reproducibility
+    # for Julia 1.10 and 1.11
+    Pkg.activate(@__DIR__)
+    Pkg.instantiate()
+else
+    # We try to install reasonable versions of all packages
+    # on other versions of Julia
+    Pkg.activate(@__DIR__)
+    Pkg.resolve()
+end
 
 # Load packages
 using LinearAlgebra: UniformScaling, I, diag, diagind, mul!, ldiv!, lu, lu!
@@ -9,9 +18,6 @@ using SparseArrays: sparse, issparse, dropzeros!
 
 using DelimitedFiles: readdlm
 using Interpolations: CubicSplineInterpolation, LinearInterpolation, Periodic
-
-using LinearSolve: LinearSolve, KLUFactorization
-using OrdinaryDiffEq
 
 using SummationByPartsOperators
 
