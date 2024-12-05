@@ -54,7 +54,8 @@ and [Julia](https://julialang.org).
 
 TODO (David): Describe required Python setup
 
-TODO (Hendrik): Describe required Julia setup
+We have used Julia version 1.10.7 for the experiments. The results can be reproduced
+by running all cells of the Jupyter notebook `figures_manuscript.ipynb` in order.
 
 
 ## Disclaimer

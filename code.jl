@@ -1,17 +1,23 @@
 # Install packages
 import Pkg
-Pkg.activate(@__DIR__)
-Pkg.instantiate()
+if v"1.10" <= VERSION < v"1.12-"
+    # We provide Manifest files for perfect reproducibility
+    # for Julia 1.10 and 1.11
+    Pkg.activate(@__DIR__)
+    Pkg.instantiate()
+else
+    # We try to install reasonable versions of all packages
+    # on other versions of Julia
+    Pkg.activate(@__DIR__)
+    Pkg.resolve()
+end
 
 # Load packages
-using LinearAlgebra: UniformScaling, I, diag, diagind, mul!, ldiv!, lu, lu!
+using LinearAlgebra: UniformScaling, I, diag, diagind, mul!, ldiv!, lu, lu!, norm
 using SparseArrays: sparse, issparse, dropzeros!
 
 using DelimitedFiles: readdlm
 using Interpolations: CubicSplineInterpolation, LinearInterpolation, Periodic
-
-using LinearSolve: LinearSolve, KLUFactorization
-using OrdinaryDiffEq
 
 using SummationByPartsOperators
 
@@ -161,6 +167,181 @@ function coefficients(::LZ564{T}) where T
                   l/6 0 0 0 2*l/3 l/6 0]
     b_nonstiff = [l/6, 0, 0, 0, 2*l/3, l/6, 0]
     c_nonstiff = [0, l/3, l/3, l/2, l/2, l, l]
+    return A_stiff, b_stiff, c_stiff, A_nonstiff, b_nonstiff, c_nonstiff
+end
+
+
+# ARK3(2)4L[2]SA–ERK:
+# 3rd order type II ImEX-RK, explicit part - NOT FSAL, implicit part - SA; NOT GSA.
+# This is a method by Kennedy and Carpenter.
+struct ARK324L2SA_ERK{T} end
+ARK324L2SA_ERK(T = Float64) = ARK324L2SA_ERK{T}()
+
+function coefficients(::ARK324L2SA_ERK{T}) where T
+    l = one(T)
+
+    A_stiff = [
+        0 0 0 0;
+        (l * 1767732205903)/4055673282236 (l * 1767732205903)/4055673282236 0 0;
+        (l * 2746238789719)/10658868560708 (l * -640167445237)/6845629431997 (l * 1767732205903)/4055673282236 0;
+        (l * 1471266399579)/7840856788654 (l * -4482444167858)/7529755066697 (l * 11266239266428)/11593286722821 (l * 1767732205903)/4055673282236
+    ]
+
+    A_nonstiff = [
+        0 0 0 0;
+        (l * 1767732205903)/2027836641118 0 0 0;
+        (l * 5535828885825)/10492691773637 (l * 788022342437)/10882634858940 0 0;
+        (l * 6485989280629)/16251701735622 (l * -4246266847089)/9704473918619 (l * 10755448449292)/10357097424841 0
+    ]
+
+    c_nonstiff = [0, (l * 1767732205903)/2027836641118, (l * 3)/5, l]
+    b_nonstiff = [(l * 1471266399579)/7840856788654 (l * -4482444167858)/7529755066697 (l * 11266239266428)/11593286722821 (l * 1767732205903)/4055673282236]
+
+    c_stiff = [0, (l * 1767732205903)/2027836641118, (l * 3)/5, l]
+    b_stiff = [(l * 1471266399579)/7840856788654 (l * -4482444167858)/7529755066697 (l * 11266239266428)/11593286722821 (l * 1767732205903)/4055673282236]
+
+
+    return A_stiff, b_stiff, c_stiff, A_nonstiff, b_nonstiff, c_nonstiff
+end
+
+
+# ARK4(3)6L[2]SA–ERK:
+# 4th order type II ImEX-RK, explicit part - NOT FSAL, implicit part - SA; NOT GSA.
+# This is a method by Kennedy and Carpenter.
+struct ARK436L2SA_ERK{T} end
+ARK436L2SA_ERK(T = Float64) = ARK436L2SA_ERK{T}()
+
+function coefficients(::ARK436L2SA_ERK{T}) where T
+    l = one(T)
+
+    A_nonstiff = [
+        0 0 0 0 0 0;
+        (l * 1/2) 0 0 0 0 0;
+        (l * 13861)/62500 (l * 6889)/62500 0 0 0 0;
+        (l * -116923316275)/2393684061468 (l * -2731218467317)/15368042101831 (l * 9408046702089)/11113171139209 0 0 0;
+        (l * -451086348788)/2902428689909 (l * -2682348792572)/7519795681897 (l * 12662868775082)/11960479115383 (l * 3355817975965)/11060851509271 0 0;
+        (l * 647845179188)/3216320057751 (l * 73281519250)/8382639484533 (l * 552539513391)/3454668386233 (l * 3354512671639)/8306763924573 (l * 4040)/17871 0
+    ]
+
+    A_stiff = [
+        0 0 0 0 0 0;
+        (l * 1/4) (l * 1/4) 0 0 0 0;
+        (l * 8611)/62500 (l * -1743)/31250 (l * 1/4) 0 0 0;
+        (l * 5012029)/34652500 (l * -654441)/2922500 (l * 174375)/388108 (l * 1/4) 0 0;
+        (l * 15267082809)/155376265600 (l * -71443401)/120774400 (l * 730878875)/902184768 (l * 2285395)/8070912 (l * 1/4) 0;
+        (l * 82889)/524892 0 (l * 15625)/83664 (l * 69875)/102672 (l * -2260)/8211 (l * 1/4)
+    ]
+
+    c_nonstiff = [0, (l * 1/2), (l * 83)/250, (l * 31)/50, (l * 17)/20, l]
+    b_nonstiff = [(l * 82889)/524892 0 (l * 15625)/83664 (l * 69875)/102672 (l * -2260)/8211 (l * 1/4)]
+    c_stiff = [0, (l * 1/2), (l * 83)/250, (l * 31)/50, (l * 17)/20, l]
+    b_stiff = [(l * 82889)/524892 0 (l * 15625)/83664 (l * 69875)/102672 (l * -2260)/8211 (l * 1/4)]
+
+    return A_stiff, b_stiff, c_stiff, A_nonstiff, b_nonstiff, c_nonstiff
+end
+
+
+# SSP2-IMEX(2,2,2):
+# 2nd order L-stable type I ImEX-RK, explicit part - NOT FSAL, implicit part - NOT SA; NOT GSA.
+struct SSP2ImEx222{T} end
+SSP2ImEx222(T = Float64) = SSP2ImEx222{T}()
+
+function coefficients(::SSP2ImEx222{T}) where T
+    l = one(T)
+    two = convert(T, 2)
+    γ = 1 - 1 / sqrt(two)
+
+    A_stiff = [γ 0;
+               l−2*γ γ]
+    b_stiff = [l/2 l/2]
+    c_stiff = [γ, l−γ]
+
+    A_nonstiff = [0 0;
+                  l 0]
+    b_nonstiff = [l/2 l/2]
+    c_nonstiff = [0, l]
+
+    return A_stiff, b_stiff, c_stiff, A_nonstiff, b_nonstiff, c_nonstiff
+end
+
+
+# SSP2-IMEX(3,3,2):
+# 2nd order L-stable type I ImEX-RK, explicit part - NOT FSAL, implicit part - SA; NOT GSA.
+struct SSP2ImEx332{T} end
+SSP2ImEx332(T = Float64) = SSP2ImEx332{T}()
+
+function coefficients(::SSP2ImEx332{T}) where T
+    l = one(T)
+
+    A_stiff = [l/4 0 0;
+               0 l/4 0;
+               l/3 l/3 l/3]
+    b_stiff = [l/3 l/3 l/3]
+    c_stiff = [l/4, l/4, l]
+
+    A_nonstiff = [0 0 0;
+               l/2 0 0;
+               l/2 l/2 0]
+    b_nonstiff = [l/3 l/3 l/3]
+    c_nonstiff = [0, l/2, l]
+
+    return A_stiff, b_stiff, c_stiff, A_nonstiff, b_nonstiff, c_nonstiff
+end
+
+
+# AGSA(3,4,2):
+# 2nd order type I ImEX-RK, explicit part - FSAL, implicit part - SA; GSA.
+struct AGSA342{T} end
+AGSA342(T = Float64) = AGSA342{T}()
+
+function coefficients(::AGSA342{T}) where T
+    l = one(T)
+
+    A_stiff = [ 168999711*l/74248304 0 0 0;
+                44004295*l/24775207 202439144*l/118586105 0 0;
+               -6418119*l/169001713 -748951821*l/1043823139 12015439*l/183058594 0;
+               -370145222*l/355758315 l/3 0 202439144*l/118586105]
+
+    b_stiff = [-370145222*l/355758315 l/3 0 202439144*l/118586105]
+    c_stiff = [168999711*l/74248304, 10233769644823783*l/2937995298698735, -22277245178359531777915943*l/32292981880895017395247558 , 1]
+
+    A_nonstiff = [ 0 0 0 0;
+                  -139833537*l/38613965 0 0 0;
+                   85870407*l/49798258 -121251843*l/1756367063 0 0;
+                   l/6 l/6 2*l/3 0]
+
+    b_nonstiff = [l/6 l/6 2*l/3 0]
+    c_nonstiff = [0, -139833537*l/38613965, 144781823980515147*l/87464020145976254, 1 ]
+
+    return A_stiff, b_stiff, c_stiff, A_nonstiff, b_nonstiff, c_nonstiff
+end
+
+# SSP3-IMEX(3,4,3):
+# 3rd order L-stable type I ImEX-RK, explicit part - NOT FSAL, implicit part - NOT SA; NOT GSA.
+
+struct SSP3ImEx343{T} end
+SSP3ImEx343(T = Float64) = SSP3ImEx343{T}()
+
+function coefficients(::SSP3ImEx343{T}) where T
+    l = one(T)
+    α = 0.24169426078821
+    β = 0.06042356519705
+    η = 0.12915286960590
+
+    A_stiff = [ α 0 0 0;
+               -α α 0 0;
+                0 l-α α 0;
+               β η l/2−β−η−α α]
+    b_stiff = [0 l/6 l/6 2*l/3]
+    c_stiff = [α, 0,l,l/2]
+
+    A_nonstiff = [0 0 0 0;
+                  0 0 0 0;
+                  0 l 0 0;
+                  0 l/4 l/4 0]
+    b_nonstiff = [0 l/6 l/6 2*l/3]
+    c_nonstiff = [0, 0, l, l/2]
+
     return A_stiff, b_stiff, c_stiff, A_nonstiff, b_nonstiff, c_nonstiff
 end
 
