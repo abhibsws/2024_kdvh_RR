@@ -648,23 +648,24 @@ function rhs_stiff!(dq, q, equation::HyperbolizedKdV, parameters, t)
         mul!(du, D1.plus, w, -1)
 
         # dv .= (D * v - w) / τ
-        mul!(dv, D1.central, v, inv_τ)
-        @. dv = dv - inv_τ * w
+        mul!(dv, D1.central, v)
+        @. dv = inv_τ * (dv - w)
 
         # dw .= (-D₋ * u + v) / τ
-        mul!(dw, D1.minus, u, -inv_τ)
-        @. dw = dw + inv_τ * v
+        mul!(dw, D1.minus, u)
+        @. dw = inv_τ * (-dw + v)
     else
         # du .= -D₊ * w
-        mul!(du, D1, w, -1)
+        mul!(du, D1, w)
+        @. du = -du
 
         # dv .= (D * v - w) / τ
-        mul!(dv, D1, v, inv_τ)
-        @. dv = dv - inv_τ * w
+        mul!(dv, D1, v)
+        @. dv = inv_τ * (dv - w)
 
         # dw .= (-D₋ * u + v) / τ
-        mul!(dw, D1, u, -inv_τ)
-        @. dw = dw + inv_τ * v
+        mul!(dw, D1, u)
+        @. dw = inv_τ * (-dw + v)
     end
 
     return nothing
