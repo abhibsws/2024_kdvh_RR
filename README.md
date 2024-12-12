@@ -1,7 +1,7 @@
 # Traveling-wave solutions and structure-preserving numerical methods for a hyperbolic approximation of the Korteweg-de Vries equation
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-success.svg)](https://opensource.org/licenses/MIT)
-[![DOI](https://zenodo.org/badge/DOI/TODO.svg)](https://doi.org/TODO)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14423352.svg)](https://doi.org/10.5281/zenodo.14423352)
 
 
 This repository contains information and code to reproduce the results
@@ -29,7 +29,7 @@ use the implementations provided here, please **also** cite this repository as
           Sch{\"u}tz, Jochen},
   year={2024},
   howpublished={\url{https://github.com/abhibsws/2024_kdvh_RR}},
-  doi={TODO}
+  doi={10.5281/zenodo.14423352}
 }
 ```
 
