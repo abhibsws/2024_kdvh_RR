@@ -36,15 +36,17 @@ use the implementations provided here, please **also** cite this repository as
 
 ## Abstract
 
-We study the recently-proposed hyperbolic approximation of the Korteweg-de Vries
-equation (KdV). We show that this approximation, which we call KdVH, possesses
-a rich variety of solutions, including solitary wave solutions that approximate
-KdV solitons, as well as other solitary and periodic solutions that are related to
-higher-order water wave models, and may include singularities.
+We study the recently-proposed hyperbolic approximation of the Korteweg-de Vries equation (KdV).
+We show that this approximation, which we call KdVH, possesses a rich variety of
+solutions, including solitary wave solutions that approximate KdV solitons, as well as other
+solitary and periodic solutions that are related to higher-order water wave models,
+and may include singularities.
 We analyze a class of implicit-explicit Runge-Kutta time discretizations for KdVH
-that are asymptotic preserving, energy conserving, and can be applied to other
-hyperbolized systems. Numerical experiments demonstrate the effectiveness of
-these discretizations.
+that are asymptotic preserving, energy conserving, and can be applied to other hyperbolized
+systems. We also develop structure-preserving spatial discretizations based on summation-by-parts
+operators in space including finite difference, discontinuous Galerkin, and Fourier methods. We use the
+relaxation approach to make the fully discrete schemes energy-preserving.
+Numerical experiments demonstrate the effectiveness of these discretizations.
 
 
 ## Numerical experiments
