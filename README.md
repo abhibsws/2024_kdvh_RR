@@ -54,7 +54,16 @@ Numerical experiments demonstrate the effectiveness of these discretizations.
 The numerical experiments use [Python](https://www.python.org)
 and [Julia](https://julialang.org).
 
-TODO (David): Describe required Python setup
+To run the Python code, you need Python 3, and the packages
+`jupyter`, `numpy`, `scipy`, and `matplotlib`.
+The Python code has been tested with the following versions, but
+other versions may work:
+
+    - Python 3.13
+    - Jupyter 1.1.1
+    - Numpy 2.1.3
+    - SciPy 1.14.1
+    - Matplotlib 3.9.2
 
 We have used Julia version 1.10.7 for the experiments. The results can be reproduced
 by running all cells of the Jupyter notebook `figures_manuscript.ipynb` in order.
