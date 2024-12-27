@@ -12,7 +12,7 @@ presented in the article
          for a hyperbolic approximation of the {K}orteweg-de {V}ries equation},
   author={Biswas, Abhijit and Ketcheson, David I. and Ranocha, Hendrik and
           Sch{\"u}tz, Jochen},
-  eprint={TODO},
+  eprint={2412.17117},
   eprinttype={arxiv},
   eprintclass={math.NA}
 }
