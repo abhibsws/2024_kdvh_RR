@@ -694,7 +694,7 @@ function operator(::typeof(rhs_stiff!), equation::HyperbolizedKdV, parameters)
                -inv_τ*D inv_τ*I O]
         return jac
     else
-        D = sparse(D1)
+        D = sparse(D1)  
         O = zero(D)
         jac = [O O -D;
                O inv_τ*D -inv_τ*I;
