@@ -7,13 +7,17 @@
 This repository contains information and code to reproduce the results
 presented in the article
 ```bibtex
-@online{biswas2024traveling,
+@article{biswas2025traveling,
   title={Traveling-wave solutions and structure-preserving numerical methods
          for a hyperbolic approximation of the {K}orteweg-de {V}ries equation},
   author={Biswas, Abhijit and Ketcheson, David I. and Ranocha, Hendrik and
           Sch{\"u}tz, Jochen},
-  year={2024},
-  month={12},
+  journal={Journal of Scientific Computing},
+  volume={103},
+  pages={90},
+  year={2025},
+  month={05},
+  doi={10.1007/s10915-025-02898-x},
   eprint={2412.17117},
   eprinttype={arxiv},
   eprintclass={math.NA}
